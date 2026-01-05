@@ -1,217 +1,315 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>مساعد تبديل العملة السورية</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap');
-        body {
-            font-family: 'Cairo', sans-serif;
-            background-color: #f1f5f9;
-            color: #1e293b;
-            user-select: none;
-        }
-        .app-container {
-            max-width: 500px;
-            margin: 0 auto;
-            padding: 1rem;
-        }
-        .glass-card {
-            background: #ffffff;
-            border-radius: 1.5rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            padding: 1.5rem;
-            margin-bottom: 1.25rem;
-            border: 1px solid #e2e8f0;
-        }
-        .btn-currency {
-            transition: all 0.2s;
-            touch-action: manipulation;
-        }
-        .btn-currency:active {
-            transform: scale(0.92);
-            background-color: #eff6ff;
-        }
-        .tab-active {
-            background-color: #2563eb;
-            color: white;
-            border-radius: 0.75rem;
-        }
-        .suggestion-box {
-            background-color: #fefce8;
-            border: 1px dashed #facc15;
-            padding: 1rem;
-            border-radius: 1rem;
-            margin-top: 1rem;
-        }
-    </style>
-</head>
-<body>
-    <div class="app-container">
-        <!-- العنوان -->
-        <header class="text-center py-4">
-            <h1 class="text-3xl font-bold text-blue-600">العملة السورية</h1>
-            <p class="text-slate-500 text-sm">حل ذكي للتبديل بين القديم والجديد</p>
-        </header>
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>مساعد تبديل العملة السورية</title>
+        <meta
+            name="description"
+            content="محول العملة السورية الذكي يساعدك على التحويل بين الليرات القديمة والنقد الجديد بسرعة ودقة. أداة مجانية للتعاملات اليومية في الأسواق السورية، مع مساعد دفع ذكي يحسب لك الفرق ويقدم نصائح عملية للتسوق"
+        />
+        <meta
+            name="keywords"
+            content="العملة السورية, محول عملة, تحويل ليرة سورية, قديم وجديد, حساب النقد, محول مال, أداة مالية, ليرة سورية, تحويل عملة سوريا"
+        />
+        <meta name="author" content="محمد هويدي" />
+        <meta name="copyright" content="محول العملة السورية" />
+        <!-- Essential Open Graph Tags -->
+        <meta property="og:title" content="محول العملة السورية - أداة ذكية للتحويل بين القديم والجديد" />
+        <meta
+            property="og:description"
+            content="حول العملة السورية بسهولة بين الليرات القديمة والنقد الجديد. مساعد دفع ذكي للتعاملات اليومية في سوريا"
+        />
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://yourwebsite.com" />
+        <meta property="og:locale" content="ar_SY" />
+        <meta property="og:site_name" content="محول العملة السورية" />
 
-        <!-- قسم التحويل المباشر -->
-        <div class="glass-card">
-            <h2 class="text-lg font-bold mb-4 flex items-center text-blue-800">🔄 محول العملة</h2>
-            <div class="space-y-3">
-                <div class="relative">
-                    <label class="block text-[10px] font-bold text-slate-400 mr-1">قديم (ليرة)</label>
-                    <input type="number" id="oldInput" oninput="syncOldToNew()" onfocus="this.select()" placeholder="أدخل المبلغ القديم" 
-                           class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
-                <div class="relative">
-                    <label class="block text-[10px] font-bold text-slate-400 mr-1">جديد (نقد)</label>
-                    <input type="number" id="newInput" oninput="syncNewToOld()" onfocus="this.select()" placeholder="المقابل بالجديد" 
-                           class="w-full bg-blue-50 border border-blue-200 rounded-xl px-4 py-2 text-lg font-bold text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
-                </div>
-            </div>
-        </div>
-
-        <!-- مساعد الدفع الذكي -->
-        <div class="glass-card border-blue-200 bg-white">
-            <h2 class="text-lg font-bold mb-3 flex items-center text-slate-700">🛒 مساعد الدفع</h2>
-            
-            <!-- تبديل العملة المطلوبة -->
-            <div class="flex bg-slate-100 p-1 rounded-xl mb-4">
-                <button id="tabNew" onclick="setMode('new')" class="flex-1 py-2 text-sm font-bold tab-active">طلب البائع جديد</button>
-                <button id="tabOld" onclick="setMode('old')" class="flex-1 py-2 text-sm font-bold text-slate-500">طلب البائع قديم</button>
-            </div>
-
-            <div class="mb-4">
-                <label id="labelRequired" class="block text-sm font-bold text-slate-600 mb-1">كم طلب منك البائع؟</label>
-                <input type="number" id="totalRequired" oninput="calculateDifference()" onfocus="this.select()" placeholder="أدخل الرقم هنا" 
-                       class="w-full border-2 border-blue-400 rounded-xl px-4 py-3 text-2xl font-bold focus:outline-none bg-blue-50 shadow-inner text-center">
-            </div>
-
-            <div class="grid grid-cols-2 gap-3 mb-4">
-                <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
-                    <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase">معي نقد جديد</label>
-                    <input type="number" id="walletNew" oninput="calculateDifference()" onfocus="this.select()" value="0" class="w-full text-lg font-bold text-green-600 focus:outline-none bg-transparent">
-                </div>
-                <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
-                    <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase">معي ليرة قديمة</label>
-                    <input type="number" id="walletOld" oninput="calculateDifference()" onfocus="this.select()" value="0" class="w-full text-lg font-bold text-orange-600 focus:outline-none bg-transparent">
-                </div>
-            </div>
-
-            <!-- نتيجة الحسبة والتحليل -->
-            <div id="resultBox" class="hidden space-y-3">
-                <div id="resultColor" class="p-4 rounded-2xl text-center shadow-sm border-2">
-                    <p id="resultStatus" class="font-bold text-xl mb-1"></p>
-                    <div id="resultDetail" class="text-sm"></div>
-                </div>
-
-                <!-- نصيحة ذكية -->
-                <div id="smartSuggestion" class="suggestion-box">
-                    <p class="font-bold text-blue-800 text-sm mb-1">💡 نصيحة البرنامج لك:</p>
-                    <p id="suggestionText" class="text-sm text-blue-900 leading-relaxed"></p>
-                </div>
-            </div>
-        </div>
-
-        <!-- فئات العملة -->
-        <div class="glass-card">
-            <h2 class="text-sm font-bold text-slate-500 mb-3 text-center italic">اضغط لإضافة نقد جديد لمحفظتك</h2>
-            <div class="grid grid-cols-3 gap-2">
-                <button onclick="addCoin(10)" class="btn-currency bg-slate-50 border border-slate-200 py-3 rounded-xl font-bold text-blue-700">10</button>
-                <button onclick="addCoin(25)" class="btn-currency bg-slate-50 border border-slate-200 py-3 rounded-xl font-bold text-blue-700">25</button>
-                <button onclick="addCoin(50)" class="btn-currency bg-slate-50 border border-slate-200 py-3 rounded-xl font-bold text-blue-700">50</button>
-                <button onclick="addCoin(100)" class="btn-currency bg-white border-2 border-blue-100 py-3 rounded-xl font-bold text-blue-700">100</button>
-                <button onclick="addCoin(200)" class="btn-currency bg-white border-2 border-blue-100 py-3 rounded-xl font-bold text-blue-700">200</button>
-                <button onclick="addCoin(500)" class="btn-currency bg-white border-2 border-blue-100 py-3 rounded-xl font-bold text-blue-700">500</button>
-            </div>
-            <button onclick="clearWallet()" class="w-full mt-4 text-xs text-red-500 font-bold underline">تصفير الحسابات</button>
-        </div>
-
-        <footer class="text-center pb-6">
-            <div class="inline-block px-6 py-2 bg-blue-600 text-white rounded-full shadow-lg">
-                <p class="text-xs font-bold">تصميم: محمد هويدي</p>
-            </div>
-        </footer>
-    </div>
-
-    <script>
-        let currentMode = 'new'; 
-
-        function setMode(mode) {
-            currentMode = mode;
-            document.getElementById('tabNew').className = mode === 'new' ? 'flex-1 py-2 text-sm font-bold tab-active' : 'flex-1 py-2 text-sm font-bold text-slate-500';
-            document.getElementById('tabOld').className = mode === 'old' ? 'flex-1 py-2 text-sm font-bold tab-active' : 'flex-1 py-2 text-sm font-bold text-slate-500';
-            document.getElementById('labelRequired').innerText = mode === 'new' ? "كم طلب منك البائع (بالجديد)؟" : "كم طلب منك البائع (بالقديم)؟";
-            calculateDifference();
-        }
-
-        function syncOldToNew() {
-            const oldVal = document.getElementById('oldInput').value;
-            document.getElementById('newInput').value = oldVal ? (parseFloat(oldVal) / 100) : "";
-        }
-
-        function syncNewToOld() {
-            const newVal = document.getElementById('newInput').value;
-            document.getElementById('oldInput').value = newVal ? (parseFloat(newVal) * 100) : "";
-        }
-
-        function addCoin(val) {
-            const wallet = document.getElementById('walletNew');
-            wallet.value = parseFloat(wallet.value || 0) + val;
-            calculateDifference();
-        }
-
-        function clearWallet() {
-            document.getElementById('walletNew').value = 0;
-            document.getElementById('walletOld').value = 0;
-            document.getElementById('totalRequired').value = "";
-            document.getElementById('resultBox').classList.add('hidden');
-        }
-
-        function calculateDifference() {
-            const requiredInput = parseFloat(document.getElementById('totalRequired').value) || 0;
-            const hasNew = parseFloat(document.getElementById('walletNew').value) || 0;
-            const hasOld = parseFloat(document.getElementById('walletOld').value) || 0;
-
-            const reqInNew = currentMode === 'new' ? requiredInput : (requiredInput / 100);
-            const reqInOld = currentMode === 'old' ? requiredInput : (requiredInput * 100);
-            
-            const totalInNew = hasNew + (hasOld / 100);
-            const diffNew = totalInNew - reqInNew;
-
-            const box = document.getElementById('resultBox');
-            if (requiredInput === 0 && totalInNew === 0) {
-                box.classList.add('hidden');
-                return;
+        <!-- Optional: إذا أردت إضافة صورة -->
+        <!-- <meta property="og:image" content="https://yourwebsite.com/logo.png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <script src="https://cdn.tailwindcss.com"></script> -->
+        <style>
+            @import url("https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700&display=swap");
+            body {
+                font-family: "Cairo", sans-serif;
+                background-color: #f1f5f9;
+                color: #1e293b;
+                user-select: none;
             }
-            box.classList.remove('hidden');
+            .app-container {
+                max-width: 500px;
+                margin: 0 auto;
+                padding: 1rem;
+            }
+            .glass-card {
+                background: #ffffff;
+                border-radius: 1.5rem;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+                padding: 1.5rem;
+                margin-bottom: 1.25rem;
+                border: 1px solid #e2e8f0;
+            }
+            .btn-currency {
+                transition: all 0.2s;
+                touch-action: manipulation;
+            }
+            .btn-currency:active {
+                transform: scale(0.92);
+                background-color: #eff6ff;
+            }
+            .tab-active {
+                background-color: #2563eb;
+                color: white;
+                border-radius: 0.75rem;
+            }
+            .suggestion-box {
+                background-color: #fefce8;
+                border: 1px dashed #facc15;
+                padding: 1rem;
+                border-radius: 1rem;
+                margin-top: 1rem;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="app-container">
+            <!-- العنوان -->
+            <header class="text-center py-4">
+                <h1 class="text-3xl font-bold text-blue-600">العملة السورية</h1>
+                <p class="text-slate-500 text-sm">حل ذكي للتبديل بين القديم والجديد</p>
+            </header>
 
-            const status = document.getElementById('resultStatus');
-            const color = document.getElementById('resultColor');
-            const detail = document.getElementById('resultDetail');
-            const suggestionText = document.getElementById('suggestionText');
+            <!-- قسم التحويل المباشر -->
+            <div class="glass-card">
+                <h2 class="text-lg font-bold mb-4 flex items-center text-blue-800">🔄 محول العملة</h2>
+                <div class="space-y-3">
+                    <div class="relative">
+                        <label class="block text-[10px] font-bold text-slate-400 mr-1">قديم (ليرة)</label>
+                        <input
+                            type="number"
+                            id="oldInput"
+                            oninput="syncOldToNew()"
+                            onfocus="this.select()"
+                            placeholder="أدخل المبلغ القديم"
+                            class="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-2 text-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                    </div>
+                    <div class="relative">
+                        <label class="block text-[10px] font-bold text-slate-400 mr-1">جديد (نقد)</label>
+                        <input
+                            type="number"
+                            id="newInput"
+                            oninput="syncNewToOld()"
+                            onfocus="this.select()"
+                            placeholder="المقابل بالجديد"
+                            class="w-full bg-blue-50 border border-blue-200 rounded-xl px-4 py-2 text-lg font-bold text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                        />
+                    </div>
+                </div>
+            </div>
 
-            if (diffNew >= 0) {
-                color.className = "p-4 rounded-2xl text-center bg-green-50 border-green-200 text-green-800 shadow-sm border-2";
-                status.innerText = "المبلغ متوفر ✅";
-                detail.innerHTML = `معك ما يعادل <b>${totalInNew.toFixed(2)} نقد</b><br>الباقي لك: <b>${diffNew.toFixed(2)} نقد</b> (أو ${Math.round(diffNew*100)} قديم)`;
-                
-                if (currentMode === 'old') {
-                    suggestionText.innerHTML = `البائع طلب <b>${requiredInput} ليرة قديمة</b>. أفضل شيء هو أن تعطيه <b>${reqInNew.toFixed(2)} من النقد الجديد</b> وسيكون حسابك خالصاً تماماً.`;
-                } else {
-                    suggestionText.innerHTML = `البائع طلب <b>${requiredInput} نقد جديد</b>. إذا لم يكن معك "فراطة" جديدة، يمكنك إعطاؤه <b>${reqInOld} من الليرات القديمة</b> وسيكون حسابك خالصاً.`;
+            <!-- مساعد الدفع الذكي -->
+            <div class="glass-card border-blue-200 bg-white">
+                <h2 class="text-lg font-bold mb-3 flex items-center text-slate-700">🛒 مساعد الدفع</h2>
+
+                <!-- تبديل العملة المطلوبة -->
+                <div class="flex bg-slate-100 p-1 rounded-xl mb-4">
+                    <button id="tabNew" onclick="setMode('new')" class="flex-1 py-2 text-sm font-bold tab-active">طلب البائع جديد</button>
+                    <button id="tabOld" onclick="setMode('old')" class="flex-1 py-2 text-sm font-bold text-slate-500">
+                        طلب البائع قديم
+                    </button>
+                </div>
+
+                <div class="mb-4">
+                    <label id="labelRequired" class="block text-sm font-bold text-slate-600 mb-1">كم طلب منك البائع؟</label>
+                    <input
+                        type="number"
+                        id="totalRequired"
+                        oninput="calculateDifference()"
+                        onfocus="this.select()"
+                        placeholder="أدخل الرقم هنا"
+                        class="w-full border-2 border-blue-400 rounded-xl px-4 py-3 text-2xl font-bold focus:outline-none bg-blue-50 shadow-inner text-center"
+                    />
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 mb-4">
+                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+                        <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase">معي نقد جديد</label>
+                        <input
+                            type="number"
+                            id="walletNew"
+                            oninput="calculateDifference()"
+                            onfocus="this.select()"
+                            value="0"
+                            class="w-full text-lg font-bold text-green-600 focus:outline-none bg-transparent"
+                        />
+                    </div>
+                    <div class="bg-slate-50 p-3 rounded-xl border border-slate-200">
+                        <label class="block text-[10px] font-bold text-slate-400 mb-1 uppercase">معي ليرة قديمة</label>
+                        <input
+                            type="number"
+                            id="walletOld"
+                            oninput="calculateDifference()"
+                            onfocus="this.select()"
+                            value="0"
+                            class="w-full text-lg font-bold text-orange-600 focus:outline-none bg-transparent"
+                        />
+                    </div>
+                </div>
+
+                <!-- نتيجة الحسبة والتحليل -->
+                <div id="resultBox" class="hidden space-y-3">
+                    <div id="resultColor" class="p-4 rounded-2xl text-center shadow-sm border-2">
+                        <p id="resultStatus" class="font-bold text-xl mb-1"></p>
+                        <div id="resultDetail" class="text-sm"></div>
+                    </div>
+
+                    <!-- نصيحة ذكية -->
+                    <div id="smartSuggestion" class="suggestion-box">
+                        <p class="font-bold text-blue-800 text-sm mb-1">💡 نصيحة البرنامج لك:</p>
+                        <p id="suggestionText" class="text-sm text-blue-900 leading-relaxed"></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- فئات العملة -->
+            <div class="glass-card">
+                <h2 class="text-sm font-bold text-slate-500 mb-3 text-center italic">اضغط لإضافة نقد جديد لمحفظتك</h2>
+                <div class="grid grid-cols-3 gap-2">
+                    <button
+                        onclick="addCoin(10)"
+                        class="btn-currency bg-slate-50 border border-slate-200 py-3 rounded-xl font-bold text-blue-700"
+                    >
+                        10
+                    </button>
+                    <button
+                        onclick="addCoin(25)"
+                        class="btn-currency bg-slate-50 border border-slate-200 py-3 rounded-xl font-bold text-blue-700"
+                    >
+                        25
+                    </button>
+                    <button
+                        onclick="addCoin(50)"
+                        class="btn-currency bg-slate-50 border border-slate-200 py-3 rounded-xl font-bold text-blue-700"
+                    >
+                        50
+                    </button>
+                    <button
+                        onclick="addCoin(100)"
+                        class="btn-currency bg-white border-2 border-blue-100 py-3 rounded-xl font-bold text-blue-700"
+                    >
+                        100
+                    </button>
+                    <button
+                        onclick="addCoin(200)"
+                        class="btn-currency bg-white border-2 border-blue-100 py-3 rounded-xl font-bold text-blue-700"
+                    >
+                        200
+                    </button>
+                    <button
+                        onclick="addCoin(500)"
+                        class="btn-currency bg-white border-2 border-blue-100 py-3 rounded-xl font-bold text-blue-700"
+                    >
+                        500
+                    </button>
+                </div>
+                <button onclick="clearWallet()" class="w-full mt-4 text-xs text-red-500 font-bold underline">تصفير الحسابات</button>
+            </div>
+
+            <footer class="text-center pb-6">
+                <div class="inline-block px-6 py-2 bg-blue-600 text-white rounded-full shadow-lg">
+                    <p class="text-xs font-bold">تصميم: محمد هويدي</p>
+                </div>
+            </footer>
+        </div>
+
+        <script>
+            let currentMode = "new";
+
+            function setMode(mode) {
+                currentMode = mode;
+                document.getElementById("tabNew").className =
+                    mode === "new" ? "flex-1 py-2 text-sm font-bold tab-active" : "flex-1 py-2 text-sm font-bold text-slate-500";
+                document.getElementById("tabOld").className =
+                    mode === "old" ? "flex-1 py-2 text-sm font-bold tab-active" : "flex-1 py-2 text-sm font-bold text-slate-500";
+                document.getElementById("labelRequired").innerText =
+                    mode === "new" ? "كم طلب منك البائع (بالجديد)؟" : "كم طلب منك البائع (بالقديم)؟";
+                calculateDifference();
+            }
+
+            function syncOldToNew() {
+                const oldVal = document.getElementById("oldInput").value;
+                document.getElementById("newInput").value = oldVal ? parseFloat(oldVal) / 100 : "";
+            }
+
+            function syncNewToOld() {
+                const newVal = document.getElementById("newInput").value;
+                document.getElementById("oldInput").value = newVal ? parseFloat(newVal) * 100 : "";
+            }
+
+            function addCoin(val) {
+                const wallet = document.getElementById("walletNew");
+                wallet.value = parseFloat(wallet.value || 0) + val;
+                calculateDifference();
+            }
+
+            function clearWallet() {
+                document.getElementById("walletNew").value = 0;
+                document.getElementById("walletOld").value = 0;
+                document.getElementById("totalRequired").value = "";
+                document.getElementById("resultBox").classList.add("hidden");
+            }
+
+            function calculateDifference() {
+                const requiredInput = parseFloat(document.getElementById("totalRequired").value) || 0;
+                const hasNew = parseFloat(document.getElementById("walletNew").value) || 0;
+                const hasOld = parseFloat(document.getElementById("walletOld").value) || 0;
+
+                const reqInNew = currentMode === "new" ? requiredInput : requiredInput / 100;
+                const reqInOld = currentMode === "old" ? requiredInput : requiredInput * 100;
+
+                const totalInNew = hasNew + hasOld / 100;
+                const diffNew = totalInNew - reqInNew;
+
+                const box = document.getElementById("resultBox");
+                if (requiredInput === 0 && totalInNew === 0) {
+                    box.classList.add("hidden");
+                    return;
                 }
-            } else {
-                color.className = "p-4 rounded-2xl text-center bg-red-50 border-red-200 text-red-800 shadow-sm border-2";
-                status.innerText = "المبلغ ناقص ❌";
-                const shortageNew = Math.abs(diffNew);
-                const shortageOld = Math.round(shortageNew * 100);
-                detail.innerHTML = `ينقصك: <b>${shortageNew.toFixed(2)} نقد جديد</b><br>(أي ما يعادل ${shortageOld} ليرة قديمة)`;
-                suggestionText.innerHTML = `ابحث في جيبك عن <b>${shortageNew.toFixed(2)} نقد جديد</b> إضافي، أو ورقة <b>${shortageOld} ليرة قديمة</b> لتكمل الحساب.`;
+                box.classList.remove("hidden");
+
+                const status = document.getElementById("resultStatus");
+                const color = document.getElementById("resultColor");
+                const detail = document.getElementById("resultDetail");
+                const suggestionText = document.getElementById("suggestionText");
+
+                if (diffNew >= 0) {
+                    color.className = "p-4 rounded-2xl text-center bg-green-50 border-green-200 text-green-800 shadow-sm border-2";
+                    status.innerText = "المبلغ متوفر ✅";
+                    detail.innerHTML = `معك ما يعادل <b>${totalInNew.toFixed(2)} نقد</b><br>الباقي لك: <b>${diffNew.toFixed(
+                        2
+                    )} نقد</b> (أو ${Math.round(diffNew * 100)} قديم)`;
+
+                    if (currentMode === "old") {
+                        suggestionText.innerHTML = `البائع طلب <b>${requiredInput} ليرة قديمة</b>. أفضل شيء هو أن تعطيه <b>${reqInNew.toFixed(
+                            2
+                        )} من النقد الجديد</b> وسيكون حسابك خالصاً تماماً.`;
+                    } else {
+                        suggestionText.innerHTML = `البائع طلب <b>${requiredInput} نقد جديد</b>. إذا لم يكن معك "فراطة" جديدة، يمكنك إعطاؤه <b>${reqInOld} من الليرات القديمة</b> وسيكون حسابك خالصاً.`;
+                    }
+                } else {
+                    color.className = "p-4 rounded-2xl text-center bg-red-50 border-red-200 text-red-800 shadow-sm border-2";
+                    status.innerText = "المبلغ ناقص ❌";
+                    const shortageNew = Math.abs(diffNew);
+                    const shortageOld = Math.round(shortageNew * 100);
+                    detail.innerHTML = `ينقصك: <b>${shortageNew.toFixed(2)} نقد جديد</b><br>(أي ما يعادل ${shortageOld} ليرة قديمة)`;
+                    suggestionText.innerHTML = `ابحث في جيبك عن <b>${shortageNew.toFixed(
+                        2
+                    )} نقد جديد</b> إضافي، أو ورقة <b>${shortageOld} ليرة قديمة</b> لتكمل الحساب.`;
+                }
             }
-        }
-    </script>
-</body>
+        </script>
+    </body>
 </html>
