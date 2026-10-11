@@ -35,4 +35,4 @@ Then visit `http://localhost:8000`.
 
 ## Credits
 
-Built by Mohammed Hussein.
+Built by محمد هويدي (Muhammad Huwaidi).
